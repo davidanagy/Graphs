@@ -20,11 +20,22 @@ class Graph:
         Add a directed edge to the graph.
         """
         # Check if they exist
-        if v1 in self.vertices and v2 in self.vertices:
-            # Add the edge
+        v1_exists = False
+        v2_exists = False
+        if v1 in self.vertices:
+            v1_exists = True
+        if v2 in self.vertices:
+            v2_exists = True
+        # Add the edge
+        if v1_exists and v2_exists:
             self.vertices[v1].add(v2)
         else:
-            print('ERROR ADDING EDGE:  Vertex not found')
+            if not v1_exists and not v2_exists:
+                raise KeyError(f'Vertices {v1} and {v2} not found')
+            elif not v1_exists:
+                raise KeyError(f'Vertex {v1} not found')
+            else:
+                raise KeyError(f'Vertex {v2} not found')
 
     def get_neighbors(self, vertex_id):
         """
@@ -33,7 +44,7 @@ class Graph:
         if vertex_id in self.vertices:
             return self.vertices[vertex_id]
         else:
-            print('ERROR:  Vertex not found')
+            raise KeyError(f'Vertex {vertex_id} not found')
 
     def bft(self, starting_vertex):
         """
