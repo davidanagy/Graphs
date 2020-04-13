@@ -1,3 +1,9 @@
+import random
+import sys
+sys.path.append('../graph')
+from util import Queue
+
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -45,8 +51,21 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
 
         # Add users
-
+        for i in range(num_users):
+            name = f'Fake user {i+1}'
+            self.add_user(name)
         # Create friendships
+        possible_friendships = []
+        for i in range(1, num_users+1):
+            for j in range(1, num_users+1):
+                if i < j:
+                    possible_friendships.append((i,j))
+        
+        random.shuffle(possible_friendships)
+        num_friendships = num_users * avg_friendships // 2
+        for i in range(num_friendships):
+            friendship = possible_friendships[i]
+            self.add_friendship(friendship[0], friendship[1])
 
     def get_all_social_paths(self, user_id):
         """
@@ -59,6 +78,23 @@ class SocialGraph:
         """
         visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
+        queue = Queue()
+        current_path = [user_id]
+        while current_path:
+            #print('Current path:', current_path)
+            current_node = current_path[-1]
+            if current_node not in visited:
+                visited[current_node] = current_path
+                #print(f'New result -- {current_node}: {current_path}')
+            for neighbor in self.friendships[current_node]:
+                if neighbor not in visited:
+                    new_path = current_path.copy()
+                    new_path.append(neighbor)
+                    #print('New path:', new_path)
+                    queue.enqueue(new_path)
+                    #print('Queue:', queue.queue)
+            current_path = queue.dequeue()
+
         return visited
 
 
@@ -66,5 +102,7 @@ if __name__ == '__main__':
     sg = SocialGraph()
     sg.populate_graph(10, 2)
     print(sg.friendships)
+    #sg.friendships = {1: {8, 7}, 2: {3, 4}, 3: {9, 2}, 4: {8, 2}, 5: {9}, 6: {9}, 7: {8, 9, 1}, 8: {1, 4, 7}, 9: {3, 5, 6, 7}, 10: set()}
+    #print(sg.friendships)
     connections = sg.get_all_social_paths(1)
     print(connections)
