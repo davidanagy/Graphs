@@ -30,6 +30,7 @@ class Graph:
         if v1_exists and v2_exists:
             self.vertices[v1].add(v2)
         else:
+            # Raise an error that states which vertex (or vertices) were not found
             if not v1_exists and not v2_exists:
                 raise KeyError(f'Vertices {v1} and {v2} not found')
             elif not v1_exists:
@@ -41,8 +42,10 @@ class Graph:
         """
         Get all neighbors (edges) of a vertex.
         """
+        # Check if vertex exists
         if vertex_id in self.vertices:
             return self.vertices[vertex_id]
+        # If it doesn't, raise an error
         else:
             raise KeyError(f'Vertex {vertex_id} not found')
 
@@ -51,15 +54,21 @@ class Graph:
         Print each vertex in breadth-first order
         beginning from starting_vertex.
         """
+        # Define set of vertices already traversed
         traversed_vertices = {starting_vertex}
+        # Create a Queue since it's breadth-first
         queue = Queue()
         current_node = starting_vertex
+        # While current_node isn't None
         while current_node:
             print(current_node)
             for neighbor in self.get_neighbors(current_node):
                 if neighbor not in traversed_vertices:
                     traversed_vertices.add(neighbor)
                     queue.enqueue(neighbor)
+            # Dequeue and set it as current_node.
+            # If the queue is empty, current_node will be None
+            # and the while-loop will end.
             current_node = queue.dequeue()
 
     def dft(self, starting_vertex):
@@ -67,6 +76,7 @@ class Graph:
         Print each vertex in depth-first order
         beginning from starting_vertex.
         """
+        # Same as above, just using a Stack instead since it's depth-first.
         traversed_vertices = {starting_vertex}
         stack = Stack()
         current_node = starting_vertex
@@ -86,6 +96,10 @@ class Graph:
         This should be done using recursion.
         """
         traversed_vertices = {starting_vertex}
+        # Have to create a helper function, or else the
+        # traversed_vertices set will be overwritten when the
+        # function is called again.
+        # The traversed_vertices set is an argument in the helper function.
         def recursion_function(vertex, traversed_vertices):
             print(vertex)
             for neighbor in self.get_neighbors(vertex):
@@ -102,19 +116,29 @@ class Graph:
         """
         searched_vertices = {starting_vertex}
         queue = Queue()
+        # Similar to a traversal, but instead of
+        # queueing values, we're queueing paths.
+        # Start at the starting vertex.
         current_path = [starting_vertex]
         while current_path:
             for neighbor in self.get_neighbors(current_path[-1]):
                 if neighbor not in searched_vertices:
+                    # Create a copy so that we don't interfere with
+                    # the original path.
                     new_path = current_path.copy()
                     new_path.append(neighbor)
                     if neighbor == destination_vertex:
+                        # If we've found the destination, we're done.
+                        # Return the path we just made.
                         return new_path
                     else:
                         searched_vertices.add(neighbor)
                         queue.enqueue(new_path)
             current_path = queue.dequeue()
         
+        # If the while-loop ends without finding the destination_vertex,
+        # that means there's no path from the start to the destination.
+        # So return an empty list.
         return []
 
     def dfs(self, starting_vertex, destination_vertex):
@@ -123,6 +147,7 @@ class Graph:
         starting_vertex to destination_vertex in
         depth-first order.
         """
+        # Same as the above, just using a Stack.
         searched_vertices = {starting_vertex}
         stack = Stack()
         current_path = [starting_vertex]
@@ -150,6 +175,11 @@ class Graph:
         """
         traversed_vertices = {starting_vertex}
         path = [starting_vertex]
+        # Again, for similar reasons as the previous recursive function,
+        # we need a helper function.
+        # (The print statements below were used for error-checking.)
+        # Now we need to pass the path through the helper function as well,
+        # to make sure it's maintained as we call it over and over.
         def recursion_function(vertex, destination_vertex, traversed_vertices, path):
             #print('Current path:', path)
             for neighbor in self.get_neighbors(vertex):
@@ -165,6 +195,9 @@ class Graph:
                         traversed_vertices.add(neighbor)
                         search_path = recursion_function(neighbor, destination_vertex,
                                                          traversed_vertices, new_path)
+                        # If "neighbor" has no neighbors (that aren't in traversed_vertices),
+                        # then "search_path" will be None. We don't want to return a None value.
+                        # So only return it if it's not None.
                         if search_path:
                             return search_path
 
