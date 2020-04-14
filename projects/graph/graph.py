@@ -88,25 +88,47 @@ class Graph:
                     stack.push(neighbor)
             current_node = stack.pop()
 
-    def dft_recursive(self, starting_vertex):
+    # def dft_recursive(self, starting_vertex):
+    #     """
+    #     Print each vertex in depth-first order
+    #     beginning from starting_vertex.
+
+    #     This should be done using recursion.
+    #     """
+    #     traversed_vertices = {starting_vertex}
+    #     # Have to create a helper function, or else the
+    #     # traversed_vertices set will be overwritten when the
+    #     # function is called again.
+    #     # The traversed_vertices set is an argument in the helper function.
+    #     def recursion_function(vertex, traversed_vertices):
+    #         print(vertex)
+    #         for neighbor in self.get_neighbors(vertex):
+    #             if neighbor not in traversed_vertices:
+    #                 traversed_vertices.add(neighbor)
+    #                 recursion_function(neighbor, traversed_vertices)
+    #     recursion_function(starting_vertex, traversed_vertices)
+
+    def dft_recursive(self, starting_vertex, visited=None):
         """
         Print each vertex in depth-first order
         beginning from starting_vertex.
 
         This should be done using recursion.
         """
-        traversed_vertices = {starting_vertex}
-        # Have to create a helper function, or else the
-        # traversed_vertices set will be overwritten when the
-        # function is called again.
-        # The traversed_vertices set is an argument in the helper function.
-        def recursion_function(vertex, traversed_vertices):
-            print(vertex)
-            for neighbor in self.get_neighbors(vertex):
-                if neighbor not in traversed_vertices:
-                    traversed_vertices.add(neighbor)
-                    recursion_function(neighbor, traversed_vertices)
-        recursion_function(starting_vertex, traversed_vertices)
+        # Initial case
+        if visited is None:
+            visited = set()
+
+        # Print
+        print(starting_vertex)
+
+        # Track visited nodes
+        visited.add(starting_vertex)
+
+        # Call the function recursively on neighbors not visited
+        for neighbor in self.get_neighbors(starting_vertex):
+            if neighbor not in visited:
+                self.dft_recursive(neighbor, visited)
 
     def bfs(self, starting_vertex, destination_vertex):
         """
@@ -165,7 +187,46 @@ class Graph:
         
         return None
 
-    def dfs_recursive(self, starting_vertex, destination_vertex):
+    # def dfs_recursive(self, starting_vertex, destination_vertex):
+    #     """
+    #     Return a list containing a path from
+    #     starting_vertex to destination_vertex in
+    #     depth-first order.
+
+    #     This should be done using recursion.
+    #     """
+    #     traversed_vertices = {starting_vertex}
+    #     path = [starting_vertex]
+    #     # Again, for similar reasons as the previous recursive function,
+    #     # we need a helper function.
+    #     # (The print statements below were used for error-checking.)
+    #     # Now we need to pass the path through the helper function as well,
+    #     # to make sure it's maintained as we call it over and over.
+    #     def recursion_function(vertex, destination_vertex, traversed_vertices, path):
+    #         #print('Current path:', path)
+    #         for neighbor in self.get_neighbors(vertex):
+    #             #print('Neighbor:', neighbor)
+    #             if neighbor not in traversed_vertices:
+    #                 new_path = path.copy()
+    #                 new_path.append(neighbor)
+    #                 #print('New path:', new_path)
+    #                 if neighbor == destination_vertex:
+    #                     #print('Destination found')
+    #                     return new_path
+    #                 else:
+    #                     traversed_vertices.add(neighbor)
+    #                     search_path = recursion_function(neighbor, destination_vertex,
+    #                                                      traversed_vertices, new_path)
+    #                     # If "neighbor" has no neighbors (that aren't in traversed_vertices),
+    #                     # then "search_path" will be None. We don't want to return a None value.
+    #                     # So only return it if it's not None.
+    #                     if search_path:
+    #                         return search_path
+
+    #     return recursion_function(starting_vertex, destination_vertex,
+    #                               traversed_vertices, path)
+
+    def dfs_recursive(self, starting_vertex, destination_vertex, visited=None, path=None):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
@@ -173,36 +234,24 @@ class Graph:
 
         This should be done using recursion.
         """
-        traversed_vertices = {starting_vertex}
-        path = [starting_vertex]
-        # Again, for similar reasons as the previous recursive function,
-        # we need a helper function.
-        # (The print statements below were used for error-checking.)
-        # Now we need to pass the path through the helper function as well,
-        # to make sure it's maintained as we call it over and over.
-        def recursion_function(vertex, destination_vertex, traversed_vertices, path):
-            #print('Current path:', path)
-            for neighbor in self.get_neighbors(vertex):
-                #print('Neighbor:', neighbor)
-                if neighbor not in traversed_vertices:
-                    new_path = path.copy()
-                    new_path.append(neighbor)
-                    #print('New path:', new_path)
-                    if neighbor == destination_vertex:
-                        #print('Destination found')
-                        return new_path
-                    else:
-                        traversed_vertices.add(neighbor)
-                        search_path = recursion_function(neighbor, destination_vertex,
-                                                         traversed_vertices, new_path)
-                        # If "neighbor" has no neighbors (that aren't in traversed_vertices),
-                        # then "search_path" will be None. We don't want to return a None value.
-                        # So only return it if it's not None.
-                        if search_path:
-                            return search_path
+        if visited is None:
+            visited = set()
+        if path is None:
+            new_path = list()
+        else:
+            new_path = path.copy()
 
-        return recursion_function(starting_vertex, destination_vertex,
-                                  traversed_vertices, path)
+        visited.add(starting_vertex)
+        new_path.append(starting_vertex)
+
+        if starting_vertex == destination_vertex:
+            return new_path
+        
+        for neighbor in self.get_neighbors(starting_vertex):
+            if neighbor not in visited:
+                search_path = self.dfs_recursive(neighbor, destination_vertex, visited, new_path)
+                if search_path:
+                    return search_path
 
 if __name__ == '__main__':
     graph = Graph()  # Instantiate your graph
