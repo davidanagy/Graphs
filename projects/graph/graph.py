@@ -161,7 +161,7 @@ class Graph:
         # If the while-loop ends without finding the destination_vertex,
         # that means there's no path from the start to the destination.
         # So return an empty list.
-        return []
+        return None
 
     def dfs(self, starting_vertex, destination_vertex):
         """
