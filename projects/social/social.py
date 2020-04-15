@@ -50,22 +50,38 @@ class SocialGraph:
         self.friendships = {}
         # !!!! IMPLEMENT ME 
 
-        # Add users
+        # # Add users
+        # for i in range(num_users):
+        #     name = f'Fake user {i+1}'
+        #     self.add_user(name)
+        # # Create friendships
+        # possible_friendships = []
+        # for i in range(1, num_users+1):
+        #     for j in range(1, num_users+1):
+        #         if i < j:
+        #             possible_friendships.append((i,j))
+        
+        # random.shuffle(possible_friendships)
+        # num_friendships = num_users * avg_friendships // 2
+        # for i in range(num_friendships):
+        #     friendship = possible_friendships[i]
+        #     self.add_friendship(friendship[0], friendship[1])
+        cache = set()
         for i in range(num_users):
             name = f'Fake user {i+1}'
             self.add_user(name)
-        # Create friendships
-        possible_friendships = []
-        for i in range(1, num_users+1):
-            for j in range(1, num_users+1):
-                if i < j:
-                    possible_friendships.append((i,j))
+            cache.add((i, i))
         
-        random.shuffle(possible_friendships)
         num_friendships = num_users * avg_friendships // 2
-        for i in range(num_friendships):
-            friendship = possible_friendships[i]
-            self.add_friendship(friendship[0], friendship[1])
+        for _ in range(num_friendships):
+            user1 = random.randrange(1, num_users+1)
+            user2 = random.randrange(1, num_users+1)
+            while (user1, user2) in cache:
+                user1 = random.randrange(1, num_users+1)
+                user2 = random.randrange(1, num_users+1)
+            cache.add((user1, user2))
+            cache.add((user2, user1))
+            self.add_friendship(user1, user2)
 
     def get_all_social_paths(self, user_id):
         """
@@ -129,6 +145,12 @@ For more realistic results, one method is to pre-divide the ID numbers into grou
 friendships between user IDs in the same group. Or we could keep track of how many users are in
 each person's extended network as we add friendships, and refuse to add any more friendships for
 that user once they hit a certain number. (This number can be varied from user to user.)
+
+4. If you followed the hints for part 1, your populate_graph() will run in O(n^2) time.
+Refactor your code to run in O(n) time. Are there any tradeoffs that come with this implementation?
+
+I honestly don't really see any tradeoffs. I guess if you get really unlucky, the 'while' loop
+could run for a long time.
 """
 
 if __name__ == '__main__':
